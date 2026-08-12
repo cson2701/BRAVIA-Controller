@@ -3,10 +3,30 @@ import SwiftUI
 struct TVInformationView: View {
     @ObservedObject var appModel: AppModel
     @Environment(\.dismiss) private var dismiss
+    @State private var title = ""
 
     var body: some View {
         NavigationStack {
             Form {
+                Section("Controller Title") {
+                    TextField("TV title", text: $title)
+                        .textInputAutocapitalization(.words)
+
+                    Button("Save Title") {
+                        HapticFeedback.tap()
+                        appModel.renameDevice(title)
+                    }
+                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+                    if appModel.device?.customTitle != nil {
+                        Button("Use Model Number") {
+                            HapticFeedback.tap()
+                            appModel.renameDevice(nil)
+                            title = appModel.device?.model ?? ""
+                        }
+                    }
+                }
+
                 Section("Connection") {
                     informationRow("IP Address", value: appModel.device?.host)
                     informationRow("Port", value: appModel.device.map { String($0.port) })
@@ -41,6 +61,12 @@ struct TVInformationView: View {
             }
             .task {
                 await appModel.refreshSystemInformation()
+            }
+            .onAppear {
+                title = appModel.device?.customTitle
+                    ?? appModel.device?.model
+                    ?? appModel.device?.name
+                    ?? ""
             }
         }
         .presentationDetents([.medium, .large])

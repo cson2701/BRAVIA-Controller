@@ -86,14 +86,14 @@ struct RemoteView: View {
                             Circle()
                                 .fill(connectionColor)
                                 .frame(width: 8, height: 8)
-                            Text(appModel.device?.model ?? "BRAVIA Remote")
+                            Text(appModel.device?.displayTitle ?? "BRAVIA Remote")
                                 .font(.headline)
                         }
                     }
                     .buttonStyle(.plain)
                     .accessibilityElement(children: .ignore)
                     .accessibilityLabel(
-                        "\(appModel.device?.model ?? "BRAVIA Remote"), \(appModel.connectionState.label)"
+                        "\(appModel.device?.displayTitle ?? "BRAVIA Remote"), \(appModel.connectionState.label)"
                     )
                 }
                 ToolbarItem(placement: .topBarTrailing) {

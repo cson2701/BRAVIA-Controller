@@ -133,6 +133,14 @@ final class AppModel: ObservableObject {
         }
     }
 
+    func renameDevice(_ title: String?) {
+        guard var device else { return }
+        let normalizedTitle = title?.trimmingCharacters(in: .whitespacesAndNewlines)
+        device.customTitle = normalizedTitle?.isEmpty == false ? normalizedTitle : nil
+        self.device = device
+        persist(device)
+    }
+
     func forgetDevice() {
         statusRefreshTask?.cancel()
         statusRefreshTask = nil
