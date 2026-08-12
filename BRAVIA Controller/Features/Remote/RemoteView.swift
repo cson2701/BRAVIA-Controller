@@ -7,7 +7,12 @@ struct RemoteView: View {
         NavigationStack {
             GeometryReader { geometry in
                 let buttonHeight: CGFloat = geometry.size.height < 520 ? 40 : 48
-                let spacing = sectionSpacing(for: geometry.size.height, buttonHeight: buttonHeight)
+                let verticalButtonHeight = buttonHeight + (geometry.size.height < 520 ? 8 : 12)
+                let spacing = sectionSpacing(
+                    for: geometry.size.height,
+                    buttonHeight: buttonHeight,
+                    verticalButtonHeight: verticalButtonHeight
+                )
 
                 VStack(spacing: spacing) {
                     connectionHeader
@@ -16,7 +21,7 @@ struct RemoteView: View {
                         commandButton(
                             .power,
                             prominent: true,
-                            prominentColor: .red,
+                            prominentColor: .green,
                             height: buttonHeight
                         )
                         commandButton(.input, height: buttonHeight)
@@ -29,6 +34,12 @@ struct RemoteView: View {
                         commandButton(.androidMenu, height: buttonHeight)
                     }
 
+                    HStack {
+                        commandButton(.apps, height: buttonHeight)
+                        commandButton(.youtube, foregroundColor: .red, height: buttonHeight)
+                        commandButton(.netflix, foregroundColor: .red, height: buttonHeight)
+                    }
+
                     DirectionPad(buttonHeight: buttonHeight, send: send)
 
                     HStack(spacing: 20) {
@@ -36,14 +47,14 @@ struct RemoteView: View {
                             title: "Volume",
                             upper: .volumeUp,
                             lower: .volumeDown,
-                            height: buttonHeight
+                            height: verticalButtonHeight
                         )
                         commandButton(.mute, height: buttonHeight)
                         verticalControl(
                             title: "Channel",
                             upper: .channelUp,
                             lower: .channelDown,
-                            height: buttonHeight
+                            height: verticalButtonHeight
                         )
                     }
 
@@ -114,6 +125,7 @@ struct RemoteView: View {
         _ command: TVCommand,
         prominent: Bool = false,
         prominentColor: Color = .accentColor,
+        foregroundColor: Color = .primary,
         height: CGFloat,
         repeatsWhileHeld: Bool = false
     ) -> some View {
@@ -121,6 +133,7 @@ struct RemoteView: View {
             command: command,
             prominent: prominent,
             prominentColor: prominentColor,
+            foregroundColor: foregroundColor,
             minimumHeight: height,
             repeatsWhileHeld: repeatsWhileHeld
         ) {
@@ -128,11 +141,15 @@ struct RemoteView: View {
         }
     }
 
-    private func sectionSpacing(for availableHeight: CGFloat, buttonHeight: CGFloat) -> CGFloat {
-        // Six content sections with five gaps. The estimate includes the
+    private func sectionSpacing(
+        for availableHeight: CGFloat,
+        buttonHeight: CGFloat,
+        verticalButtonHeight: CGFloat
+    ) -> CGFloat {
+        // Seven content sections with six gaps. The estimate includes the
         // direction pad, volume/channel captions, and vertical padding.
-        let fixedContentHeight = (buttonHeight * 8) + 88
-        return min(20, max(4, (availableHeight - fixedContentHeight) / 5))
+        let fixedContentHeight = (buttonHeight * 7) + (verticalButtonHeight * 2) + 88
+        return min(20, max(4, (availableHeight - fixedContentHeight) / 6))
     }
 
     private func send(_ command: TVCommand) {

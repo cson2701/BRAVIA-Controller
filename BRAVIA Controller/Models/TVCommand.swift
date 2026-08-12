@@ -6,6 +6,9 @@ enum TVCommand: String, CaseIterable, Identifiable {
     case home
     case options
     case androidMenu
+    case apps
+    case youtube
+    case netflix
     case back
     case up
     case down
@@ -31,6 +34,9 @@ enum TVCommand: String, CaseIterable, Identifiable {
         case .home: "Home"
         case .options: "Options"
         case .androidMenu: "More"
+        case .apps: "Apps"
+        case .youtube: "YouTube"
+        case .netflix: "Netflix"
         case .back: "Back"
         case .up: "Up"
         case .down: "Down"
@@ -52,10 +58,13 @@ enum TVCommand: String, CaseIterable, Identifiable {
     var systemImage: String {
         switch self {
         case .power: "power"
-        case .input: "rectangle.on.rectangle"
+        case .input: "arrow.right.square.fill"
         case .home: "house.fill"
-        case .options: "ellipsis.circle"
+        case .options: "gearshape.fill"
         case .androidMenu: "list.bullet"
+        case .apps: "square.grid.2x2.fill"
+        case .youtube: "play.rectangle.fill"
+        case .netflix: "film.fill"
         case .back: "arrow.uturn.backward"
         case .up: "chevron.up"
         case .down: "chevron.down"
@@ -83,6 +92,9 @@ enum TVCommand: String, CaseIterable, Identifiable {
         case .home: "AAAAAQAAAAEAAABgAw=="
         case .options: "AAAAAgAAAJcAAAA2Aw=="
         case .androidMenu: "AAAAAgAAAMQAAABPAw=="
+        case .apps: "AAAAAgAAAMQAAAAqAw=="
+        case .youtube: "AAAAAgAAAMQAAABHAw=="
+        case .netflix: "AAAAAgAAABoAAAB8Aw=="
         case .back: "AAAAAgAAAJcAAAAjAw=="
         case .up: "AAAAAQAAAAEAAAB0Aw=="
         case .down: "AAAAAQAAAAEAAAB1Aw=="
