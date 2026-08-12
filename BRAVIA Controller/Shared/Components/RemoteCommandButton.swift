@@ -4,6 +4,7 @@ struct RemoteCommandButton: View {
     let command: TVCommand
     var prominent = false
     var prominentColor: Color = .accentColor
+    var prominentForegroundColor: Color = .white
     var foregroundColor: Color = .primary
     var outlineColor: Color?
     var minimumHeight: CGFloat = 48
@@ -18,7 +19,7 @@ struct RemoteCommandButton: View {
 
     var body: some View {
         commandIcon
-            .foregroundStyle(prominent ? Color.white : foregroundColor)
+            .foregroundStyle(prominent ? prominentForegroundColor : foregroundColor)
             .frame(maxWidth: .infinity, minHeight: minimumHeight)
             .background(
                 prominent ? prominentColor : Color.secondary.opacity(0.2),

@@ -6,5 +6,9 @@ protocol TVControlling {
         for device: TVDevice,
         preSharedKey: String
     ) async throws -> TVSystemInformation
+    func volumeInformation(
+        for device: TVDevice,
+        preSharedKey: String
+    ) async throws -> TVVolumeInformation
     func send(_ command: TVCommand, to device: TVDevice, preSharedKey: String) async throws
 }

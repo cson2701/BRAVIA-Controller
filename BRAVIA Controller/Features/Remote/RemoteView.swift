@@ -55,19 +55,16 @@ struct RemoteView: View {
                     }
 
                     HStack(spacing: 20) {
-                        verticalControl(
-                            title: "Volume",
-                            upper: .volumeUp,
-                            lower: .volumeDown,
-                            height: verticalButtonHeight
+                        volumeControl(height: verticalButtonHeight)
+                        commandButton(
+                            .mute,
+                            prominent: appModel.volumeInformation?.mute == true,
+                            prominentColor: .primary,
+                            prominentForegroundColor: Color(uiColor: .systemBackground),
+                            height: buttonHeight
                         )
-                        commandButton(.mute, height: buttonHeight)
-                        verticalControl(
-                            title: "Channel",
-                            upper: .channelUp,
-                            lower: .channelDown,
-                            height: verticalButtonHeight
-                        )
+                        .accessibilityValue(muteAccessibilityValue)
+                        channelControl(height: verticalButtonHeight)
                     }
 
                 }
@@ -148,18 +145,45 @@ struct RemoteView: View {
         appModel.powerState == .active ? Color.green : nil
     }
 
-    private func verticalControl(
-        title: String,
-        upper: TVCommand,
-        lower: TVCommand,
-        height: CGFloat
-    ) -> some View {
+    private func volumeControl(height: CGFloat) -> some View {
         VStack {
-            Text(title)
+            commandButton(.volumeUp, height: height, repeatsWhileHeld: true)
+            HStack(spacing: 5) {
+                Image(systemName: appModel.volumeInformation?.outputSystemImage ?? "speaker.wave.2.fill")
+                Text(appModel.volumeInformation.map { String($0.volume) } ?? "–")
+                    .monospacedDigit()
+            }
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.secondary)
+            .frame(height: 16)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(volumeAccessibilityLabel)
+            commandButton(.volumeDown, height: height, repeatsWhileHeld: true)
+        }
+    }
+
+    private var volumeAccessibilityLabel: String {
+        guard let information = appModel.volumeInformation else {
+            return "Audio output and volume unknown"
+        }
+        return "\(information.outputLabel), volume \(information.volume)"
+    }
+
+    private var muteAccessibilityValue: String {
+        guard let information = appModel.volumeInformation else {
+            return "Status unknown"
+        }
+        return information.mute ? "Muted" : "Not muted"
+    }
+
+    private func channelControl(height: CGFloat) -> some View {
+        VStack {
+            commandButton(.channelUp, height: height, repeatsWhileHeld: true)
+            Text("Channel")
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            commandButton(upper, height: height, repeatsWhileHeld: true)
-            commandButton(lower, height: height, repeatsWhileHeld: true)
+                .frame(height: 16)
+            commandButton(.channelDown, height: height, repeatsWhileHeld: true)
         }
     }
 
@@ -167,6 +191,7 @@ struct RemoteView: View {
         _ command: TVCommand,
         prominent: Bool = false,
         prominentColor: Color = .accentColor,
+        prominentForegroundColor: Color = .white,
         foregroundColor: Color = .primary,
         outlineColor: Color? = nil,
         height: CGFloat,
@@ -176,6 +201,7 @@ struct RemoteView: View {
             command: command,
             prominent: prominent,
             prominentColor: prominentColor,
+            prominentForegroundColor: prominentForegroundColor,
             foregroundColor: foregroundColor,
             outlineColor: outlineColor,
             minimumHeight: height,

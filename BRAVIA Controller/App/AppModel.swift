@@ -6,6 +6,7 @@ final class AppModel: ObservableObject {
     @Published private(set) var device: TVDevice?
     @Published private(set) var connectionState: TVConnectionState = .disconnected
     @Published private(set) var powerState: TVPowerState = .unknown
+    @Published private(set) var volumeInformation: TVVolumeInformation?
     @Published private(set) var systemInformation: TVSystemInformation?
     @Published private(set) var isLoadingSystemInformation = false
     @Published var presentedError: String?
@@ -39,6 +40,10 @@ final class AppModel: ObservableObject {
 
         do {
             let status = try await controller.powerStatus(for: candidate, preSharedKey: preSharedKey)
+            volumeInformation = try? await controller.volumeInformation(
+                for: candidate,
+                preSharedKey: preSharedKey
+            )
             if let information = try? await controller.systemInformation(
                 for: candidate,
                 preSharedKey: preSharedKey
@@ -77,6 +82,10 @@ final class AppModel: ObservableObject {
                 return
             }
             powerState = try await controller.powerStatus(for: device, preSharedKey: key)
+            volumeInformation = try? await controller.volumeInformation(
+                for: device,
+                preSharedKey: key
+            )
             if markAsConnecting,
                let information = try? await controller.systemInformation(
                    for: device,
@@ -150,6 +159,7 @@ final class AppModel: ObservableObject {
         defaults.removeObject(forKey: savedDeviceKey)
         device = nil
         powerState = .unknown
+        volumeInformation = nil
         systemInformation = nil
         connectionState = .disconnected
     }
