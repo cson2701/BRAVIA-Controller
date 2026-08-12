@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct DirectionPad: View {
+    var buttonHeight: CGFloat = 48
     let send: (TVCommand) -> Void
 
     var body: some View {
@@ -25,7 +26,11 @@ struct DirectionPad: View {
     }
 
     private func button(_ command: TVCommand, prominent: Bool = false) -> some View {
-        RemoteCommandButton(command: command, prominent: prominent) {
+        RemoteCommandButton(
+            command: command,
+            prominent: prominent,
+            minimumHeight: buttonHeight
+        ) {
             send(command)
         }
     }

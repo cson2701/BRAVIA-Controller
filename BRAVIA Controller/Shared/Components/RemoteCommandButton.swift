@@ -3,6 +3,7 @@ import SwiftUI
 struct RemoteCommandButton: View {
     let command: TVCommand
     var prominent = false
+    var minimumHeight: CGFloat = 48
     let action: () -> Void
 
     var body: some View {
@@ -12,7 +13,7 @@ struct RemoteCommandButton: View {
         } label: {
             Image(systemName: command.systemImage)
                 .font(.title3.weight(.semibold))
-                .frame(maxWidth: .infinity, minHeight: 48)
+                .frame(maxWidth: .infinity, minHeight: minimumHeight)
                 .contentShape(Rectangle())
         }
         .buttonStyle(.borderedProminent)
