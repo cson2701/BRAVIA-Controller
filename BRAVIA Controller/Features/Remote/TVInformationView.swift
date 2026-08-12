@@ -4,25 +4,27 @@ struct TVInformationView: View {
     @ObservedObject var appModel: AppModel
     @Environment(\.dismiss) private var dismiss
     @State private var title = ""
+    @State private var hasInitializedNickname = false
 
     var body: some View {
         NavigationStack {
             Form {
-                Section("Controller Title") {
-                    TextField("TV title", text: $title)
+                Section("Nickname") {
+                    TextField(
+                        "Nickname",
+                        text: $title,
+                        prompt: Text(appModel.device?.model ?? "TV nickname")
+                    )
                         .textInputAutocapitalization(.words)
-
-                    Button("Save Title") {
-                        HapticFeedback.tap()
-                        appModel.renameDevice(title)
-                    }
-                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                        .onChange(of: title) { _, newValue in
+                            guard hasInitializedNickname else { return }
+                            appModel.renameDevice(newValue)
+                        }
 
                     if appModel.device?.customTitle != nil {
                         Button("Use Model Number") {
                             HapticFeedback.tap()
-                            appModel.renameDevice(nil)
-                            title = appModel.device?.model ?? ""
+                            title = ""
                         }
                     }
                 }
@@ -63,10 +65,8 @@ struct TVInformationView: View {
                 await appModel.refreshSystemInformation()
             }
             .onAppear {
-                title = appModel.device?.customTitle
-                    ?? appModel.device?.model
-                    ?? appModel.device?.name
-                    ?? ""
+                title = appModel.device?.customTitle ?? ""
+                hasInitializedNickname = true
             }
         }
         .presentationDetents([.medium, .large])
