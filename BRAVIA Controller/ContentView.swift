@@ -8,17 +8,28 @@
 import SwiftUI
 
 struct ContentView: View {
-    var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
-        }
-        .padding()
-    }
-}
+    @StateObject private var appModel = AppModel()
 
-#Preview {
-    ContentView()
+    var body: some View {
+        Group {
+            if appModel.device == nil {
+                SetupView(appModel: appModel)
+            } else {
+                RemoteView(appModel: appModel)
+            }
+        }
+        .alert(
+            "BRAVIA Controller",
+            isPresented: Binding(
+                get: { appModel.presentedError != nil },
+                set: { if !$0 { appModel.presentedError = nil } }
+            )
+        ) {
+            Button("OK", role: .cancel) {
+                appModel.presentedError = nil
+            }
+        } message: {
+            Text(appModel.presentedError ?? "Unknown error")
+        }
+    }
 }
