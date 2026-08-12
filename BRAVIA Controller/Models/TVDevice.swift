@@ -3,17 +3,20 @@ import Foundation
 struct TVDevice: Codable, Hashable, Identifiable {
     let id: UUID
     var name: String
+    var model: String?
     var host: String
     var port: Int
 
     init(
         id: UUID = UUID(),
         name: String = "Sony BRAVIA",
+        model: String? = nil,
         host: String,
         port: Int = 80
     ) {
         self.id = id
         self.name = name
+        self.model = model
         self.host = host
         self.port = port
     }

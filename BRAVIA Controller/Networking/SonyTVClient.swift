@@ -32,6 +32,32 @@ final class SonyTVClient: TVControlling {
         return TVPowerState(rawValue: status) ?? .unknown
     }
 
+    func systemInformation(
+        for device: TVDevice,
+        preSharedKey: String
+    ) async throws -> TVSystemInformation {
+        let requestBody = SonyRPCRequest(
+            method: "getSystemInformation",
+            params: [String](),
+            id: 2,
+            version: "1.0"
+        )
+        let request = try makeRequest(
+            device: device,
+            path: "sony/system",
+            preSharedKey: preSharedKey,
+            body: encoder.encode(requestBody)
+        )
+        let (data, response) = try await session.data(for: request)
+        try validate(response)
+
+        let payload = try decoder.decode(SonySystemInformationResponse.self, from: data)
+        guard let information = payload.result?.first else {
+            throw SonyAPIError.invalidResponse
+        }
+        return information
+    }
+
     func send(_ command: TVCommand, to device: TVDevice, preSharedKey: String) async throws {
         let body = """
         <?xml version="1.0"?>
@@ -104,4 +130,8 @@ private struct SonyPowerStatusResponse: Decodable {
 
 private struct SonyPowerStatus: Decodable {
     let status: String
+}
+
+private struct SonySystemInformationResponse: Decodable {
+    let result: [TVSystemInformation]?
 }
