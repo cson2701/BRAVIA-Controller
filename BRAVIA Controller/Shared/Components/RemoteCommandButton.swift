@@ -17,8 +17,7 @@ struct RemoteCommandButton: View {
     @State private var pressTask: Task<Void, Never>?
 
     var body: some View {
-        Image(systemName: command.systemImage)
-            .font(.title3.weight(.semibold))
+        commandIcon
             .foregroundStyle(prominent ? Color.white : foregroundColor)
             .frame(maxWidth: .infinity, minHeight: minimumHeight)
             .background(
@@ -54,6 +53,19 @@ struct RemoteCommandButton: View {
                 action()
             }
         .accessibilityLabel(command.title)
+    }
+
+    @ViewBuilder
+    private var commandIcon: some View {
+        if let assetImageName = command.assetImageName {
+            Image(assetImageName)
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: 62, maxHeight: 22)
+        } else {
+            Image(systemName: command.systemImage)
+                .font(.title3.weight(.semibold))
+        }
     }
 
     private func beginPress() {

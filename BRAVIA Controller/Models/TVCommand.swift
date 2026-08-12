@@ -83,6 +83,17 @@ enum TVCommand: String, CaseIterable, Identifiable {
         }
     }
 
+    var assetImageName: String? {
+        switch self {
+        case .youtube:
+            "YouTubeIcon"
+        case .netflix:
+            "NetflixIcon"
+        default:
+            nil
+        }
+    }
+
     /// Fallback codes from Sony's IRCC-IP reference. A later discovery phase
     /// should replace these with values returned by getRemoteControllerInfo.
     var irccCode: String {
