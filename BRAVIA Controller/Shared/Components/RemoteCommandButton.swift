@@ -5,6 +5,7 @@ struct RemoteCommandButton: View {
     var prominent = false
     var prominentColor: Color = .accentColor
     var foregroundColor: Color = .primary
+    var outlineColor: Color?
     var minimumHeight: CGFloat = 48
     var repeatsWhileHeld = false
     let action: () -> Void
@@ -21,6 +22,13 @@ struct RemoteCommandButton: View {
                 prominent ? prominentColor : Color.secondary.opacity(0.2),
                 in: RoundedRectangle(cornerRadius: 12, style: .continuous)
             )
+            .overlay {
+                if let outlineColor {
+                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                        .stroke(outlineColor, lineWidth: 3)
+                        .padding(-3)
+                }
+            }
             .opacity(isPressed ? 0.7 : 1)
             .scaleEffect(isPressed ? 0.97 : 1)
             .contentShape(Rectangle())

@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RemoteView: View {
     @ObservedObject var appModel: AppModel
+    @State private var isShowingTVInformation = false
 
     var body: some View {
         NavigationStack {
@@ -15,22 +16,14 @@ struct RemoteView: View {
                 )
 
                 VStack(spacing: spacing) {
-                    connectionHeader
-
                     HStack {
                         commandButton(
                             .power,
                             prominent: true,
-                            prominentColor: Color(red: 0.10, green: 0.55, blue: 0.22),
+                            prominentColor: powerButtonColor,
+                            outlineColor: powerButtonOutlineColor,
                             height: buttonHeight
                         )
-                        commandButton(.input, height: buttonHeight)
-                    }
-
-                    HStack {
-                        commandButton(.back, height: buttonHeight)
-                        commandButton(.home, height: buttonHeight)
-                        commandButton(.options, height: buttonHeight)
                         commandButton(.androidMenu, height: buttonHeight)
                     }
 
@@ -40,7 +33,26 @@ struct RemoteView: View {
                         commandButton(.netflix, foregroundColor: .red, height: buttonHeight)
                     }
 
+                    HStack {
+                        commandButton(.previous, height: buttonHeight)
+                        commandButton(.play, height: buttonHeight)
+                        commandButton(.pause, height: buttonHeight)
+                        commandButton(.next, height: buttonHeight)
+                    }
+
+                    HStack {
+                        commandButton(.input, height: buttonHeight)
+                        Spacer(minLength: 32)
+                        commandButton(.options, height: buttonHeight)
+                    }
+
                     DirectionPad(buttonHeight: buttonHeight, send: send)
+
+                    HStack {
+                        commandButton(.back, height: buttonHeight)
+                        Spacer(minLength: 32)
+                        commandButton(.home, height: buttonHeight)
+                    }
 
                     HStack(spacing: 20) {
                         verticalControl(
@@ -58,20 +70,32 @@ struct RemoteView: View {
                         )
                     }
 
-                    HStack {
-                        commandButton(.previous, height: buttonHeight)
-                        commandButton(.play, height: buttonHeight)
-                        commandButton(.pause, height: buttonHeight)
-                        commandButton(.next, height: buttonHeight)
-                    }
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             }
-            .navigationTitle(appModel.device?.name ?? "BRAVIA Remote")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Button {
+                        HapticFeedback.tap()
+                        isShowingTVInformation = true
+                    } label: {
+                        HStack(spacing: 7) {
+                            Circle()
+                                .fill(connectionColor)
+                                .frame(width: 8, height: 8)
+                            Text(appModel.device?.model ?? "BRAVIA Remote")
+                                .font(.headline)
+                        }
+                    }
+                    .buttonStyle(.plain)
+                    .accessibilityElement(children: .ignore)
+                    .accessibilityLabel(
+                        "\(appModel.device?.model ?? "BRAVIA Remote"), \(appModel.connectionState.label)"
+                    )
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         Button("Reconnect") {
@@ -90,20 +114,38 @@ struct RemoteView: View {
                     )
                 }
             }
+            .sheet(isPresented: $isShowingTVInformation) {
+                TVInformationView(appModel: appModel)
+            }
         }
     }
 
-    private var connectionHeader: some View {
-        HStack {
-            Circle()
-                .fill(appModel.connectionState == .connected ? .green : .orange)
-                .frame(width: 9, height: 9)
-            Text(appModel.connectionState.label)
-            Spacer()
-            Text(appModel.powerState.rawValue.capitalized)
-                .foregroundStyle(.secondary)
+    private var connectionColor: Color {
+        switch appModel.connectionState {
+        case .connected:
+            .green
+        case .connecting:
+            .orange
+        case .failed:
+            .red
+        case .disconnected:
+            .secondary
         }
-        .font(.subheadline)
+    }
+
+    private var powerButtonColor: Color {
+        switch appModel.powerState {
+        case .active:
+            Color(red: 0.12, green: 0.58, blue: 0.24)
+        case .standby:
+            Color(red: 0.08, green: 0.38, blue: 0.16)
+        case .unknown:
+            Color(red: 0.10, green: 0.48, blue: 0.20)
+        }
+    }
+
+    private var powerButtonOutlineColor: Color? {
+        appModel.powerState == .active ? Color.green : nil
     }
 
     private func verticalControl(
@@ -126,6 +168,7 @@ struct RemoteView: View {
         prominent: Bool = false,
         prominentColor: Color = .accentColor,
         foregroundColor: Color = .primary,
+        outlineColor: Color? = nil,
         height: CGFloat,
         repeatsWhileHeld: Bool = false
     ) -> some View {
@@ -134,6 +177,7 @@ struct RemoteView: View {
             prominent: prominent,
             prominentColor: prominentColor,
             foregroundColor: foregroundColor,
+            outlineColor: outlineColor,
             minimumHeight: height,
             repeatsWhileHeld: repeatsWhileHeld
         ) {
@@ -148,7 +192,7 @@ struct RemoteView: View {
     ) -> CGFloat {
         // Seven content sections with six gaps. The estimate includes the
         // direction pad, volume/channel captions, and vertical padding.
-        let fixedContentHeight = (buttonHeight * 7) + (verticalButtonHeight * 2) + 88
+        let fixedContentHeight = (buttonHeight * 8) + (verticalButtonHeight * 2) + 56
         return min(20, max(4, (availableHeight - fixedContentHeight) / 6))
     }
 
