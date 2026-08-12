@@ -29,7 +29,8 @@ struct DirectionPad: View {
         RemoteCommandButton(
             command: command,
             prominent: prominent,
-            minimumHeight: buttonHeight
+            minimumHeight: buttonHeight,
+            repeatsWhileHeld: command != .confirm
         ) {
             send(command)
         }

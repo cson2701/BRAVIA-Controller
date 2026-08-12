@@ -13,8 +13,12 @@ struct RemoteView: View {
                     connectionHeader
 
                     HStack {
-                        commandButton(.power, prominent: true, height: buttonHeight)
-                            .tint(.red)
+                        commandButton(
+                            .power,
+                            prominent: true,
+                            prominentColor: .red,
+                            height: buttonHeight
+                        )
                         commandButton(.input, height: buttonHeight)
                     }
 
@@ -22,6 +26,7 @@ struct RemoteView: View {
                         commandButton(.back, height: buttonHeight)
                         commandButton(.home, height: buttonHeight)
                         commandButton(.options, height: buttonHeight)
+                        commandButton(.androidMenu, height: buttonHeight)
                     }
 
                     DirectionPad(buttonHeight: buttonHeight, send: send)
@@ -74,9 +79,6 @@ struct RemoteView: View {
                     )
                 }
             }
-            .task {
-                await appModel.reconnect()
-            }
         }
     }
 
@@ -103,20 +105,24 @@ struct RemoteView: View {
             Text(title)
                 .font(.caption)
                 .foregroundStyle(.secondary)
-            commandButton(upper, height: height)
-            commandButton(lower, height: height)
+            commandButton(upper, height: height, repeatsWhileHeld: true)
+            commandButton(lower, height: height, repeatsWhileHeld: true)
         }
     }
 
     private func commandButton(
         _ command: TVCommand,
         prominent: Bool = false,
-        height: CGFloat
+        prominentColor: Color = .accentColor,
+        height: CGFloat,
+        repeatsWhileHeld: Bool = false
     ) -> some View {
         RemoteCommandButton(
             command: command,
             prominent: prominent,
-            minimumHeight: height
+            prominentColor: prominentColor,
+            minimumHeight: height,
+            repeatsWhileHeld: repeatsWhileHeld
         ) {
             send(command)
         }

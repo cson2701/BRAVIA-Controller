@@ -5,6 +5,7 @@ enum TVCommand: String, CaseIterable, Identifiable {
     case input
     case home
     case options
+    case androidMenu
     case back
     case up
     case down
@@ -29,6 +30,7 @@ enum TVCommand: String, CaseIterable, Identifiable {
         case .input: "Input"
         case .home: "Home"
         case .options: "Options"
+        case .androidMenu: "More"
         case .back: "Back"
         case .up: "Up"
         case .down: "Down"
@@ -53,6 +55,7 @@ enum TVCommand: String, CaseIterable, Identifiable {
         case .input: "rectangle.on.rectangle"
         case .home: "house.fill"
         case .options: "ellipsis.circle"
+        case .androidMenu: "list.bullet"
         case .back: "arrow.uturn.backward"
         case .up: "chevron.up"
         case .down: "chevron.down"
@@ -79,6 +82,7 @@ enum TVCommand: String, CaseIterable, Identifiable {
         case .input: "AAAAAQAAAAEAAAAlAw=="
         case .home: "AAAAAQAAAAEAAABgAw=="
         case .options: "AAAAAgAAAJcAAAA2Aw=="
+        case .androidMenu: "AAAAAgAAAMQAAABPAw=="
         case .back: "AAAAAgAAAJcAAAAjAw=="
         case .up: "AAAAAQAAAAEAAAB0Aw=="
         case .down: "AAAAAQAAAAEAAAB1Aw=="
