@@ -11,6 +11,9 @@ struct RemoteCommandButton: View {
     let action: () -> Void
 
     @State private var isPressed = false
+    @State private var isTrackingPress = false
+    @State private var isCancelled = false
+    @State private var buttonSize: CGSize = .zero
     @State private var pressTask: Task<Void, Never>?
 
     var body: some View {
@@ -34,9 +37,14 @@ struct RemoteCommandButton: View {
             .contentShape(Rectangle())
             .gesture(
                 DragGesture(minimumDistance: 0)
-                    .onChanged { _ in beginPress() }
-                    .onEnded { _ in endPress() }
+                    .onChanged { value in updatePress(at: value.location) }
+                    .onEnded { value in finishPress(at: value.location) }
             )
+            .onGeometryChange(for: CGSize.self) { proxy in
+                proxy.size
+            } action: { newSize in
+                buttonSize = newSize
+            }
             .onAppear { HapticFeedback.prepareForButtonPress() }
             .onDisappear { cancelPress() }
             .accessibilityElement()
@@ -66,6 +74,30 @@ struct RemoteCommandButton: View {
         }
     }
 
+    private func updatePress(at location: CGPoint) {
+        if !isTrackingPress {
+            isTrackingPress = true
+            isCancelled = false
+            beginPress()
+            return
+        }
+
+        guard !isCancelled, !buttonBounds.contains(location) else { return }
+        isCancelled = true
+        cancelPressEffects()
+    }
+
+    private func finishPress(at location: CGPoint) {
+        let shouldPerformAction = !isCancelled && buttonBounds.contains(location)
+        if shouldPerformAction {
+            endPress()
+        } else {
+            cancelPressEffects()
+        }
+        isTrackingPress = false
+        isCancelled = false
+    }
+
     private func endPress() {
         guard isPressed else { return }
         isPressed = false
@@ -79,9 +111,19 @@ struct RemoteCommandButton: View {
     }
 
     private func cancelPress() {
+        cancelPressEffects()
+        isTrackingPress = false
+        isCancelled = false
+    }
+
+    private func cancelPressEffects() {
         pressTask?.cancel()
         pressTask = nil
         isPressed = false
+    }
+
+    private var buttonBounds: CGRect {
+        CGRect(origin: .zero, size: buttonSize)
     }
 
 }

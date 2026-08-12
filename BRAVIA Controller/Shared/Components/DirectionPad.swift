@@ -13,7 +13,7 @@ struct DirectionPad: View {
             }
             GridRow {
                 button(.left)
-                button(.confirm, prominent: true)
+                button(.confirm)
                 button(.right)
             }
             GridRow {
@@ -25,10 +25,9 @@ struct DirectionPad: View {
         .frame(maxWidth: 280)
     }
 
-    private func button(_ command: TVCommand, prominent: Bool = false) -> some View {
+    private func button(_ command: TVCommand) -> some View {
         RemoteCommandButton(
             command: command,
-            prominent: prominent,
             minimumHeight: buttonHeight,
             repeatsWhileHeld: command != .confirm
         ) {
