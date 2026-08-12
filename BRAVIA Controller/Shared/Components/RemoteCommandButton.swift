@@ -6,7 +6,10 @@ struct RemoteCommandButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: action) {
+        Button {
+            HapticFeedback.tap()
+            action()
+        } label: {
             Image(systemName: command.systemImage)
                 .font(.title3.weight(.semibold))
                 .frame(maxWidth: .infinity, minHeight: 48)

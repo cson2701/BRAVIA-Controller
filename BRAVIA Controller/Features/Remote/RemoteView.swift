@@ -43,14 +43,19 @@ struct RemoteView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         Button("Reconnect") {
+                            HapticFeedback.tap()
                             Task { await appModel.reconnect() }
                         }
                         Button("Forget TV", role: .destructive) {
+                            HapticFeedback.tap()
                             appModel.forgetDevice()
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
                     }
+                    .simultaneousGesture(
+                        TapGesture().onEnded { HapticFeedback.tap() }
+                    )
                 }
             }
             .task {

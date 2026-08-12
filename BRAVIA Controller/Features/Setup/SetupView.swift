@@ -27,6 +27,7 @@ struct SetupView: View {
 
                 Section {
                     Button {
+                        HapticFeedback.tap()
                         Task {
                             await appModel.connect(host: host, preSharedKey: preSharedKey)
                         }

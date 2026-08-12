@@ -26,6 +26,7 @@ struct ContentView: View {
             )
         ) {
             Button("OK", role: .cancel) {
+                HapticFeedback.tap()
                 appModel.presentedError = nil
             }
         } message: {
