@@ -10,21 +10,27 @@ struct TVInformationView: View {
         NavigationStack {
             Form {
                 Section("Nickname") {
-                    TextField(
-                        "Nickname",
-                        text: $title,
-                        prompt: Text(appModel.device?.model ?? "TV nickname")
-                    )
+                    HStack {
+                        TextField(
+                            "Nickname",
+                            text: $title,
+                            prompt: Text(appModel.device?.model ?? "TV nickname")
+                        )
                         .textInputAutocapitalization(.words)
                         .onChange(of: title) { _, newValue in
                             guard hasInitializedNickname else { return }
                             appModel.renameDevice(newValue)
                         }
 
-                    if appModel.device?.customTitle != nil {
-                        Button("Use Model Number") {
-                            HapticFeedback.tap()
-                            title = ""
+                        if !title.isEmpty {
+                            Button {
+                                title = ""
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.tertiary)
+                            }
+                            .buttonStyle(.plain)
+                            .accessibilityLabel("Clear nickname")
                         }
                     }
                 }
