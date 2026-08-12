@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var appModel = AppModel()
 
     var body: some View {
@@ -17,6 +18,13 @@ struct ContentView: View {
             } else {
                 RemoteView(appModel: appModel)
             }
+        }
+        .task {
+            await appModel.reconnect()
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            guard newPhase == .active else { return }
+            Task { await appModel.refreshStatus() }
         }
         .alert(
             "BRAVIA Controller",

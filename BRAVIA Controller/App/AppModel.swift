@@ -12,6 +12,7 @@ final class AppModel: ObservableObject {
     private let credentialStore: any CredentialStoring
     private let defaults: UserDefaults
     private let savedDeviceKey = "savedTVDevice"
+    private var statusRefreshTask: Task<Void, Never>?
 
     init(
         controller: (any TVControlling)? = nil,
@@ -48,8 +49,18 @@ final class AppModel: ObservableObject {
     }
 
     func reconnect() async {
+        await refreshStatus(markAsConnecting: true)
+    }
+
+    func refreshStatus() async {
+        await refreshStatus(markAsConnecting: false)
+    }
+
+    private func refreshStatus(markAsConnecting: Bool) async {
         guard let device else { return }
-        connectionState = .connecting
+        if markAsConnecting {
+            connectionState = .connecting
+        }
         do {
             guard let key = try credentialStore.preSharedKey(for: device.id) else {
                 forgetDevice()
@@ -69,12 +80,15 @@ final class AppModel: ObservableObject {
                 throw SonyAPIError.invalidResponse
             }
             try await controller.send(command, to: device, preSharedKey: key)
+            scheduleStatusRefresh()
         } catch {
             presentedError = error.localizedDescription
         }
     }
 
     func forgetDevice() {
+        statusRefreshTask?.cancel()
+        statusRefreshTask = nil
         if let device {
             credentialStore.deletePreSharedKey(for: device.id)
         }
@@ -87,6 +101,15 @@ final class AppModel: ObservableObject {
     private func persist(_ device: TVDevice) {
         if let data = try? JSONEncoder().encode(device) {
             defaults.set(data, forKey: savedDeviceKey)
+        }
+    }
+
+    private func scheduleStatusRefresh() {
+        statusRefreshTask?.cancel()
+        statusRefreshTask = Task { [weak self] in
+            try? await Task.sleep(for: .milliseconds(300))
+            guard !Task.isCancelled else { return }
+            await self?.refreshStatus()
         }
     }
 }
