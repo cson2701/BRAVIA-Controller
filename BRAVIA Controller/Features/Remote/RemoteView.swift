@@ -21,7 +21,7 @@ struct RemoteView: View {
                         commandButton(
                             .power,
                             prominent: true,
-                            prominentColor: .green,
+                            prominentColor: Color(red: 0.10, green: 0.55, blue: 0.22),
                             height: buttonHeight
                         )
                         commandButton(.input, height: buttonHeight)

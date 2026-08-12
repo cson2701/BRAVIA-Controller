@@ -29,23 +29,29 @@ struct RemoteCommandButton: View {
                     .onChanged { _ in beginPress() }
                     .onEnded { _ in endPress() }
             )
+            .onAppear { HapticFeedback.prepareForButtonPress() }
             .onDisappear { cancelPress() }
             .accessibilityElement()
             .accessibilityAddTraits(.isButton)
-            .accessibilityAction { perform(action) }
+            .accessibilityAction {
+                HapticFeedback.tap()
+                action()
+            }
         .accessibilityLabel(command.title)
     }
 
     private func beginPress() {
         guard !isPressed else { return }
         isPressed = true
+        HapticFeedback.buttonDown()
 
         if repeatsWhileHeld {
-            perform(action)
+            action()
             pressTask = Task {
                 try? await Task.sleep(for: .milliseconds(400))
                 while !Task.isCancelled {
-                    perform(action)
+                    HapticFeedback.repeatTick()
+                    action()
                     try? await Task.sleep(for: .milliseconds(140))
                 }
             }
@@ -57,9 +63,10 @@ struct RemoteCommandButton: View {
         isPressed = false
         pressTask?.cancel()
         pressTask = nil
+        HapticFeedback.buttonUp()
 
         if !repeatsWhileHeld {
-            perform(action)
+            action()
         }
     }
 
@@ -69,8 +76,4 @@ struct RemoteCommandButton: View {
         isPressed = false
     }
 
-    private func perform(_ action: () -> Void) {
-        HapticFeedback.tap()
-        action()
-    }
 }
