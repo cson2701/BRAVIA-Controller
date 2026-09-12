@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct RemoteView: View {
+    @Environment(\.scenePhase) private var scenePhase
     @ObservedObject var appModel: AppModel
     @State private var isShowingTVInformation = false
 
@@ -113,6 +114,16 @@ struct RemoteView: View {
             }
             .sheet(isPresented: $isShowingTVInformation) {
                 TVInformationView(appModel: appModel)
+            }
+            .background(alignment: .topLeading) {
+                HardwareVolumeButtonHandler(
+                    isEnabled: scenePhase == .active && appModel.connectionState == .connected,
+                    onVolumeUp: { send(.volumeUp) },
+                    onVolumeDown: { send(.volumeDown) }
+                )
+                .frame(width: 1, height: 1)
+                .allowsHitTesting(false)
+                .accessibilityHidden(true)
             }
         }
     }
