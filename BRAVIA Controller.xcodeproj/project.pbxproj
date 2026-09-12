@@ -6,7 +6,44 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		A00000000000000000000001 /* BRAVIA Controller Controls.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A00000000000000000000031 /* BRAVIA Controller Controls.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		A00000000000000000000002 /* OpenRemoteIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000032 /* OpenRemoteIntent.swift */; };
+		A00000000000000000000003 /* OpenRemoteIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000032 /* OpenRemoteIntent.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		A00000000000000000000011 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5581FD7B302C49C1009EE52C /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A00000000000000000000071;
+			remoteInfo = "BRAVIA Controller Controls";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		A00000000000000000000021 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				A00000000000000000000001 /* BRAVIA Controller Controls.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A00000000000000000000041 /* Exceptions for "BRAVIA Controller Controls" folder in "BRAVIA Controller Controls" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A00000000000000000000071 /* BRAVIA Controller Controls */;
+		};
 		5581FD91302C49C4009EE52C /* Exceptions for "BRAVIA Controller" folder in "BRAVIA Controller" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -18,6 +55,8 @@
 
 /* Begin PBXFileReference section */
 		5581FD83302C49C1009EE52C /* BRAVIA Controller.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BRAVIA Controller.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A00000000000000000000031 /* BRAVIA Controller Controls.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "BRAVIA Controller Controls.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A00000000000000000000032 /* OpenRemoteIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenRemoteIntent.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -29,10 +68,25 @@
 			path = "BRAVIA Controller";
 			sourceTree = "<group>";
 		};
+		A00000000000000000000051 /* BRAVIA Controller Controls */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A00000000000000000000041 /* Exceptions for "BRAVIA Controller Controls" folder in "BRAVIA Controller Controls" target */,
+			);
+			path = "BRAVIA Controller Controls";
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		5581FD80302C49C1009EE52C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A00000000000000000000061 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -46,6 +100,8 @@
 			isa = PBXGroup;
 			children = (
 				5581FD85302C49C1009EE52C /* BRAVIA Controller */,
+				A00000000000000000000051 /* BRAVIA Controller Controls */,
+				A00000000000000000000052 /* Shared Intents */,
 				5581FD84302C49C1009EE52C /* Products */,
 			);
 			sourceTree = "<group>";
@@ -54,8 +110,17 @@
 			isa = PBXGroup;
 			children = (
 				5581FD83302C49C1009EE52C /* BRAVIA Controller.app */,
+				A00000000000000000000031 /* BRAVIA Controller Controls.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A00000000000000000000052 /* Shared Intents */ = {
+			isa = PBXGroup;
+			children = (
+				A00000000000000000000032 /* OpenRemoteIntent.swift */,
+			);
+			path = "Shared Intents";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -68,10 +133,12 @@
 				5581FD7F302C49C1009EE52C /* Sources */,
 				5581FD80302C49C1009EE52C /* Frameworks */,
 				5581FD81302C49C1009EE52C /* Resources */,
+				A00000000000000000000021 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				A000000000000000000000A1 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				5581FD85302C49C1009EE52C /* BRAVIA Controller */,
@@ -82,6 +149,28 @@
 			productName = "BRAVIA Controller";
 			productReference = 5581FD83302C49C1009EE52C /* BRAVIA Controller.app */;
 			productType = "com.apple.product-type.application";
+		};
+		A00000000000000000000071 /* BRAVIA Controller Controls */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A000000000000000000000B3 /* Build configuration list for PBXNativeTarget "BRAVIA Controller Controls" */;
+			buildPhases = (
+				A00000000000000000000091 /* Sources */,
+				A00000000000000000000061 /* Frameworks */,
+				A00000000000000000000081 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				A00000000000000000000051 /* BRAVIA Controller Controls */,
+			);
+			name = "BRAVIA Controller Controls";
+			packageProductDependencies = (
+			);
+			productName = "BRAVIA Controller Controls";
+			productReference = A00000000000000000000031 /* BRAVIA Controller Controls.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -94,6 +183,9 @@
 				LastUpgradeCheck = 2660;
 				TargetAttributes = {
 					5581FD82302C49C1009EE52C = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					A00000000000000000000071 = {
 						CreatedOnToolsVersion = 26.6;
 					};
 				};
@@ -113,12 +205,20 @@
 			projectRoot = "";
 			targets = (
 				5581FD82302C49C1009EE52C /* BRAVIA Controller */,
+				A00000000000000000000071 /* BRAVIA Controller Controls */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		5581FD81302C49C1009EE52C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A00000000000000000000081 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -132,10 +232,27 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A00000000000000000000002 /* OpenRemoteIntent.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A00000000000000000000091 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A00000000000000000000003 /* OpenRemoteIntent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		A000000000000000000000A1 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A00000000000000000000071 /* BRAVIA Controller Controls */;
+			targetProxy = A00000000000000000000011 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		5581FD8C302C49C4009EE52C /* Debug */ = {
@@ -325,6 +442,60 @@
 			};
 			name = Release;
 		};
+		A000000000000000000000B1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = XGA236LQ6Z;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "BRAVIA Controller Controls/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "scrapps.BRAVIA-Controller.Controls";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		A000000000000000000000B2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = XGA236LQ6Z;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = "BRAVIA Controller Controls/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "scrapps.BRAVIA-Controller.Controls";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -342,6 +513,15 @@
 			buildConfigurations = (
 				5581FD8F302C49C4009EE52C /* Debug */,
 				5581FD90302C49C4009EE52C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A000000000000000000000B3 /* Build configuration list for PBXNativeTarget "BRAVIA Controller Controls" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A000000000000000000000B1 /* Debug */,
+				A000000000000000000000B2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
