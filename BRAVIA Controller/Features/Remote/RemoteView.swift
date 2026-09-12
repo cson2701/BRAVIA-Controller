@@ -20,9 +20,9 @@ struct RemoteView: View {
                     HStack {
                         commandButton(
                             .power,
-                            prominent: true,
+                            prominent: appModel.powerState == .active,
                             prominentColor: powerButtonColor,
-                            outlineColor: powerButtonOutlineColor,
+                            foregroundColor: powerButtonForegroundColor,
                             height: buttonHeight
                         )
                         commandButton(.androidMenu, height: buttonHeight)
@@ -142,18 +142,11 @@ struct RemoteView: View {
     }
 
     private var powerButtonColor: Color {
-        switch appModel.powerState {
-        case .active:
-            Color(red: 0.12, green: 0.58, blue: 0.24)
-        case .standby:
-            Color(red: 0.08, green: 0.38, blue: 0.16)
-        case .unknown:
-            Color(red: 0.10, green: 0.48, blue: 0.20)
-        }
+        Color(red: 0.12, green: 0.58, blue: 0.24)
     }
 
-    private var powerButtonOutlineColor: Color? {
-        appModel.powerState == .active ? Color.green : nil
+    private var powerButtonForegroundColor: Color {
+        appModel.powerState == .standby ? powerButtonColor : .primary
     }
 
     private func volumeControl(height: CGFloat) -> some View {
