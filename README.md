@@ -20,9 +20,12 @@ BRAVIA Controller/
 
 On the TV, open Network settings and enable IP control. Select Pre-Shared Key authentication and create a key. Enable Remote Start if the app should wake the TV from standby. The phone and TV must be on the same local network.
 
+Automatic discovery uses the BRAVIA's Bonjour-advertised Google Cast service and does not require Apple's restricted Multicast Networking entitlement.
+
 ## Current scaffold
 
-- Manual IP address and pre-shared-key onboarding
+- Automatic BRAVIA discovery over Bonjour, with manual IP address fallback
+- Pre-shared-key onboarding
 - Authenticated `getPowerStatus` connection test
 - Keychain storage for the pre-shared key
 - IRCC-IP command transport
@@ -34,5 +37,4 @@ On the TV, open Network settings and enable IP control. Select Pre-Shared Key au
 1. Test the connection flow against the physical X90J.
 2. Retrieve model/name and supported IRCC codes with `getRemoteControllerInfo`.
 3. Add typed audio, input, and app-control REST endpoints.
-4. Add device discovery after manual setup is proven reliable.
-5. Add a unit-test target with a mocked `URLProtocol` transport.
+4. Add a unit-test target with mocked Bonjour and `URLProtocol` transports.

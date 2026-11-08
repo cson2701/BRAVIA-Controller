@@ -9,9 +9,13 @@ final class AppModel: ObservableObject {
     @Published private(set) var volumeInformation: TVVolumeInformation?
     @Published private(set) var systemInformation: TVSystemInformation?
     @Published private(set) var isLoadingSystemInformation = false
+    @Published private(set) var discoveredTVs: [DiscoveredTV] = []
+    @Published private(set) var isDiscovering = false
+    @Published private(set) var discoveryMessage: String?
     @Published var presentedError: String?
 
     private let controller: any TVControlling
+    private let discoveryService: any TVDiscovering
     private let credentialStore: any CredentialStoring
     private let defaults: UserDefaults
     private let savedDeviceKey = "savedTVDevice"
@@ -19,10 +23,12 @@ final class AppModel: ObservableObject {
 
     init(
         controller: (any TVControlling)? = nil,
+        discoveryService: (any TVDiscovering)? = nil,
         credentialStore: (any CredentialStoring)? = nil,
         defaults: UserDefaults = .standard
     ) {
         self.controller = controller ?? SonyTVClient()
+        self.discoveryService = discoveryService ?? SonyTVDiscoveryService()
         self.credentialStore = credentialStore ?? KeychainCredentialStore()
         self.defaults = defaults
         if let data = defaults.data(forKey: savedDeviceKey) {
@@ -30,12 +36,29 @@ final class AppModel: ObservableObject {
         }
     }
 
-    func connect(host: String, preSharedKey: String) async {
+    func discoverTVs() async {
+        guard !isDiscovering else { return }
+        isDiscovering = true
+        discoveryMessage = nil
+
+        do {
+            discoveredTVs = try await discoveryService.discover()
+            if discoveredTVs.isEmpty {
+                discoveryMessage = "No BRAVIA TVs found. Make sure the TV is on and connected to the same Wi-Fi network."
+            }
+        } catch {
+            discoveredTVs = []
+            discoveryMessage = error.localizedDescription
+        }
+        isDiscovering = false
+    }
+
+    func connect(host: String, port: Int = 80, preSharedKey: String) async {
         let normalizedHost = host
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .replacingOccurrences(of: "http://", with: "")
             .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        var candidate = TVDevice(host: normalizedHost)
+        var candidate = TVDevice(host: normalizedHost, port: port)
         connectionState = .connecting
 
         do {

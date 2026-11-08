@@ -25,8 +25,12 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_googlecast._tcp</string>
+	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>BRAVIA Controller connects directly to your Sony TV on your local network.</string>
+	<string>BRAVIA Controller discovers and connects directly to Sony TVs on your local network.</string>
 	<key>UILaunchScreen</key>
 	<dict/>
 	<key>UIRequiredDeviceCapabilities</key>
