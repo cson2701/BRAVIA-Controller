@@ -106,7 +106,13 @@ struct HardwareVolumeButtonHandler: UIViewRepresentable {
 
         private func enable(using volumeView: MPVolumeView) {
 #if !targetEnvironment(simulator)
-            guard volumeObservation == nil,
+            // MPVolumeView controls the volume of the active media route. When
+            // AirPlay is connected that route is the TV, so moving the slider
+            // to the neutral capture point would immediately set the TV to 50%.
+            // Leave hardware volume handling to the system while AirPlay is in
+            // use instead of intercepting those button presses for IRCC.
+            guard !audioSession.currentRoute.outputs.contains(where: { $0.portType == .airPlay }),
+                  volumeObservation == nil,
                   let slider = volumeView.subviews.first(where: { $0 is UISlider }) as? UISlider else {
                 return
             }
