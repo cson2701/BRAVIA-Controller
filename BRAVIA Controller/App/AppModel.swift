@@ -1,5 +1,7 @@
 import Combine
 import Foundation
+import OSLog
+import WidgetKit
 
 @MainActor
 final class AppModel: ObservableObject {
@@ -89,6 +91,7 @@ final class AppModel: ObservableObject {
             powerState = status
             connectionState = .connected
             persist(savedDevice)
+            publishWidgetConfiguration(for: savedDevice, preSharedKey: preSharedKey)
         } catch {
             connectionState = .failed(error.localizedDescription)
             presentedError = error.localizedDescription
@@ -116,7 +119,10 @@ final class AppModel: ObservableObject {
             }
             let status = try await controller.powerStatus(for: device, preSharedKey: key)
             guard self.device?.id == device.id else { return }
-            powerState = status
+            if status != powerState {
+                powerState = status
+                WidgetCenter.shared.reloadTimelines(ofKind: WidgetTVConfiguration.kind)
+            }
             let volume = try? await controller.volumeInformation(
                 for: device,
                 preSharedKey: key
@@ -139,6 +145,9 @@ final class AppModel: ObservableObject {
                 systemInformation = information
                 persist(updatedDevice)
             }
+            if shouldRefreshCodes {
+                publishWidgetConfiguration(for: updatedDevice, preSharedKey: key)
+            }
             connectionState = .connected
         } catch {
             guard self.device?.id == device.id else { return }
@@ -151,10 +160,7 @@ final class AppModel: ObservableObject {
     }
 
     private func irccCode(for command: TVCommand) -> String? {
-        if let remoteCommandCodes {
-            return remoteCommandCodes[command]
-        }
-        return command.fallbackIRCCCode
+        command.irccCode(reported: remoteCommandCodes)
     }
 
     func send(_ command: TVCommand) async {
@@ -190,6 +196,7 @@ final class AppModel: ObservableObject {
             updatedDevice.model = information.model
             self.device = updatedDevice
             persist(updatedDevice)
+            publishWidgetConfiguration(for: updatedDevice, preSharedKey: key)
         } catch {
             presentedError = error.localizedDescription
         }
@@ -201,11 +208,21 @@ final class AppModel: ObservableObject {
         device.customTitle = normalizedTitle?.isEmpty == false ? normalizedTitle : nil
         self.device = device
         persist(device)
+        if let key = try? credentialStore.preSharedKey(for: device.id) {
+            publishWidgetConfiguration(for: device, preSharedKey: key)
+        }
     }
 
     func forgetDevice() {
         statusRefreshTask?.cancel()
         statusRefreshTask = nil
+        do {
+            try WidgetTVConfiguration.clear()
+        } catch {
+            Logger(subsystem: "scrapps.BRAVIA-Controller", category: "Widget")
+                .error("Could not clear the widget’s saved TV: \(error.localizedDescription, privacy: .public)")
+        }
+        WidgetCenter.shared.reloadTimelines(ofKind: WidgetTVConfiguration.kind)
         if let device {
             credentialStore.deletePreSharedKey(for: device.id)
         }
@@ -221,6 +238,22 @@ final class AppModel: ObservableObject {
     private func persist(_ device: TVDevice) {
         if let data = try? JSONEncoder().encode(device) {
             defaults.set(data, forKey: savedDeviceKey)
+        }
+    }
+
+    private func publishWidgetConfiguration(for device: TVDevice, preSharedKey: String) {
+        let configuration = WidgetTVConfiguration(
+            device: device,
+            remoteCommandCodes: remoteCommandCodes,
+            preSharedKey: preSharedKey
+        )
+        do {
+            if try configuration.publish() {
+                WidgetCenter.shared.reloadTimelines(ofKind: WidgetTVConfiguration.kind)
+            }
+        } catch {
+            Logger(subsystem: "scrapps.BRAVIA-Controller", category: "Widget")
+                .error("Could not share the saved TV with the widget: \(error.localizedDescription, privacy: .public)")
         }
     }
 

@@ -5,5 +5,6 @@ import WidgetKit
 struct BRAVIAControllerControlsBundle: WidgetBundle {
     var body: some Widget {
         BRAVIAControllerControl()
+        BRAVIAHomeRemoteWidget()
     }
 }

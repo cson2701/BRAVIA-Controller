@@ -1,6 +1,6 @@
 import Foundation
 
-enum TVCommand: String, CaseIterable, Identifiable {
+enum TVCommand: String, CaseIterable, Identifiable, Codable {
     case power
     case input
     case home
@@ -103,7 +103,12 @@ enum TVCommand: String, CaseIterable, Identifiable {
         }
     }
 
-    var fallbackIRCCCode: String? {
+    func irccCode(reported: [TVCommand: String]?) -> String? {
+        if let reported { return reported[self] }
+        return fallbackIRCCCode
+    }
+
+    private var fallbackIRCCCode: String? {
         switch self {
         case .power, .input, .home, .back, .up, .down, .left, .right, .confirm,
              .volumeUp, .volumeDown, .mute, .channelUp, .channelDown:

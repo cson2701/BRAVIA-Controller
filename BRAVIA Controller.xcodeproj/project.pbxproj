@@ -10,6 +10,19 @@
 		A00000000000000000000001 /* BRAVIA Controller Controls.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = A00000000000000000000031 /* BRAVIA Controller Controls.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		A00000000000000000000002 /* OpenRemoteIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000032 /* OpenRemoteIntent.swift */; };
 		A00000000000000000000003 /* OpenRemoteIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A00000000000000000000032 /* OpenRemoteIntent.swift */; };
+		A1000000000000000010000 /* BRAVIA Controller/Models/TVCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020000 /* BRAVIA Controller/Models/TVCommand.swift */; };
+		A1000000000000000010001 /* BRAVIA Controller/Models/TVDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020001 /* BRAVIA Controller/Models/TVDevice.swift */; };
+		A1000000000000000010002 /* BRAVIA Controller/Models/TVConnectionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020002 /* BRAVIA Controller/Models/TVConnectionState.swift */; };
+		A1000000000000000010003 /* BRAVIA Controller/Models/TVSystemInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020003 /* BRAVIA Controller/Models/TVSystemInformation.swift */; };
+		A1000000000000000010004 /* BRAVIA Controller/Models/TVVolumeInformation.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020004 /* BRAVIA Controller/Models/TVVolumeInformation.swift */; };
+		A1000000000000000010005 /* BRAVIA Controller/Networking/SonyTVClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020005 /* BRAVIA Controller/Networking/SonyTVClient.swift */; };
+		A1000000000000000010006 /* BRAVIA Controller/Networking/TVControlling.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020006 /* BRAVIA Controller/Networking/TVControlling.swift */; };
+		A1000000000000000010007 /* BRAVIA Controller/Networking/SonyAPIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020007 /* BRAVIA Controller/Networking/SonyAPIError.swift */; };
+		A1000000000000000010008 /* BRAVIA Controller/Persistence/CredentialStoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020008 /* BRAVIA Controller/Persistence/CredentialStoring.swift */; };
+		A1000000000000000010009 /* BRAVIA Controller/Persistence/KeychainCredentialStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020009 /* BRAVIA Controller/Persistence/KeychainCredentialStore.swift */; };
+		A1000000000000000010010 /* BRAVIA Controller/Persistence/WidgetTVConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020010 /* BRAVIA Controller/Persistence/WidgetTVConfiguration.swift */; };
+		A1000000000000000010011 /* SendTVCommandIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020011 /* SendTVCommandIntent.swift */; };
+		A1000000000000000010012 /* SendTVCommandIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1000000000000000020011 /* SendTVCommandIntent.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,14 +49,25 @@
 		};
 /* End PBXCopyFilesBuildPhase section */
 
+/* Begin PBXFileReference section */
+		5581FD83302C49C1009EE52C /* BRAVIA Controller.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BRAVIA Controller.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A00000000000000000000031 /* BRAVIA Controller Controls.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "BRAVIA Controller Controls.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		A00000000000000000000032 /* OpenRemoteIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenRemoteIntent.swift; sourceTree = "<group>"; };
+		A1000000000000000020000 /* BRAVIA Controller/Models/TVCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BRAVIA Controller/Models/TVCommand.swift"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000020001 /* BRAVIA Controller/Models/TVDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BRAVIA Controller/Models/TVDevice.swift"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000020002 /* BRAVIA Controller/Models/TVConnectionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BRAVIA Controller/Models/TVConnectionState.swift"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000020003 /* BRAVIA Controller/Models/TVSystemInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BRAVIA Controller/Models/TVSystemInformation.swift"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000020004 /* BRAVIA Controller/Models/TVVolumeInformation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BRAVIA Controller/Models/TVVolumeInformation.swift"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000020005 /* BRAVIA Controller/Networking/SonyTVClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BRAVIA Controller/Networking/SonyTVClient.swift"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000020006 /* BRAVIA Controller/Networking/TVControlling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BRAVIA Controller/Networking/TVControlling.swift"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000020007 /* BRAVIA Controller/Networking/SonyAPIError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BRAVIA Controller/Networking/SonyAPIError.swift"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000020008 /* BRAVIA Controller/Persistence/CredentialStoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BRAVIA Controller/Persistence/CredentialStoring.swift"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000020009 /* BRAVIA Controller/Persistence/KeychainCredentialStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BRAVIA Controller/Persistence/KeychainCredentialStore.swift"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000020010 /* BRAVIA Controller/Persistence/WidgetTVConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BRAVIA Controller/Persistence/WidgetTVConfiguration.swift"; sourceTree = SOURCE_ROOT; };
+		A1000000000000000020011 /* SendTVCommandIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SendTVCommandIntent.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		A00000000000000000000041 /* Exceptions for "BRAVIA Controller Controls" folder in "BRAVIA Controller Controls" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = A00000000000000000000071 /* BRAVIA Controller Controls */;
-		};
 		5581FD91302C49C4009EE52C /* Exceptions for "BRAVIA Controller" folder in "BRAVIA Controller" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -51,13 +75,14 @@
 			);
 			target = 5581FD82302C49C1009EE52C /* BRAVIA Controller */;
 		};
+		A00000000000000000000041 /* Exceptions for "BRAVIA Controller Controls" folder in "BRAVIA Controller Controls" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = A00000000000000000000071 /* BRAVIA Controller Controls */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileReference section */
-		5581FD83302C49C1009EE52C /* BRAVIA Controller.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BRAVIA Controller.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A00000000000000000000031 /* BRAVIA Controller Controls.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "BRAVIA Controller Controls.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
-		A00000000000000000000032 /* OpenRemoteIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenRemoteIntent.swift; sourceTree = "<group>"; };
-/* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5581FD85302C49C1009EE52C /* BRAVIA Controller */ = {
@@ -96,6 +121,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		553E810B30B11C5D00709BF2 /* Shared TV Sources */ = {
+			isa = PBXGroup;
+			children = (
+				A1000000000000000020000 /* BRAVIA Controller/Models/TVCommand.swift */,
+				A1000000000000000020001 /* BRAVIA Controller/Models/TVDevice.swift */,
+				A1000000000000000020002 /* BRAVIA Controller/Models/TVConnectionState.swift */,
+				A1000000000000000020003 /* BRAVIA Controller/Models/TVSystemInformation.swift */,
+				A1000000000000000020004 /* BRAVIA Controller/Models/TVVolumeInformation.swift */,
+				A1000000000000000020005 /* BRAVIA Controller/Networking/SonyTVClient.swift */,
+				A1000000000000000020006 /* BRAVIA Controller/Networking/TVControlling.swift */,
+				A1000000000000000020007 /* BRAVIA Controller/Networking/SonyAPIError.swift */,
+				A1000000000000000020008 /* BRAVIA Controller/Persistence/CredentialStoring.swift */,
+				A1000000000000000020009 /* BRAVIA Controller/Persistence/KeychainCredentialStore.swift */,
+				A1000000000000000020010 /* BRAVIA Controller/Persistence/WidgetTVConfiguration.swift */,
+			);
+			name = "Shared TV Sources";
+			sourceTree = "<group>";
+		};
 		5581FD7A302C49C1009EE52C = {
 			isa = PBXGroup;
 			children = (
@@ -103,6 +146,7 @@
 				A00000000000000000000051 /* BRAVIA Controller Controls */,
 				A00000000000000000000052 /* Shared Intents */,
 				5581FD84302C49C1009EE52C /* Products */,
+				553E810B30B11C5D00709BF2 /* Shared TV Sources */,
 			);
 			sourceTree = "<group>";
 		};
@@ -119,6 +163,7 @@
 			isa = PBXGroup;
 			children = (
 				A00000000000000000000032 /* OpenRemoteIntent.swift */,
+				A1000000000000000020011 /* SendTVCommandIntent.swift */,
 			);
 			path = "Shared Intents";
 			sourceTree = "<group>";
@@ -184,9 +229,15 @@
 				TargetAttributes = {
 					5581FD82302C49C1009EE52C = {
 						CreatedOnToolsVersion = 26.6;
+						SystemCapabilities = {
+							com.apple.Keychain = {enabled = 1; };
+						};
 					};
 					A00000000000000000000071 = {
 						CreatedOnToolsVersion = 26.6;
+						SystemCapabilities = {
+							com.apple.Keychain = {enabled = 1; };
+						};
 					};
 				};
 			};
@@ -233,6 +284,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A00000000000000000000002 /* OpenRemoteIntent.swift in Sources */,
+				A1000000000000000010011 /* SendTVCommandIntent.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +293,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				A00000000000000000000003 /* OpenRemoteIntent.swift in Sources */,
+				A1000000000000000010012 /* SendTVCommandIntent.swift in Sources */,
+				A1000000000000000010000 /* BRAVIA Controller/Models/TVCommand.swift in Sources */,
+				A1000000000000000010001 /* BRAVIA Controller/Models/TVDevice.swift in Sources */,
+				A1000000000000000010002 /* BRAVIA Controller/Models/TVConnectionState.swift in Sources */,
+				A1000000000000000010003 /* BRAVIA Controller/Models/TVSystemInformation.swift in Sources */,
+				A1000000000000000010004 /* BRAVIA Controller/Models/TVVolumeInformation.swift in Sources */,
+				A1000000000000000010005 /* BRAVIA Controller/Networking/SonyTVClient.swift in Sources */,
+				A1000000000000000010006 /* BRAVIA Controller/Networking/TVControlling.swift in Sources */,
+				A1000000000000000010007 /* BRAVIA Controller/Networking/SonyAPIError.swift in Sources */,
+				A1000000000000000010008 /* BRAVIA Controller/Persistence/CredentialStoring.swift in Sources */,
+				A1000000000000000010009 /* BRAVIA Controller/Persistence/KeychainCredentialStore.swift in Sources */,
+				A1000000000000000010010 /* BRAVIA Controller/Persistence/WidgetTVConfiguration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,6 +355,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = XGA236LQ6Z;
+				BRAVIA_WIDGET_KEYCHAIN_GROUP = "$(DEVELOPMENT_TEAM).scrapps.BRAVIA-Controller.widget";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -355,6 +420,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = XGA236LQ6Z;
+				BRAVIA_WIDGET_KEYCHAIN_GROUP = "$(DEVELOPMENT_TEAM).scrapps.BRAVIA-Controller.widget";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -381,6 +447,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = BRAVIA.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XGA236LQ6Z;
@@ -414,6 +481,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = BRAVIA.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XGA236LQ6Z;
@@ -446,6 +514,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = BRAVIA.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XGA236LQ6Z;
@@ -473,6 +542,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				APPLICATION_EXTENSION_API_ONLY = YES;
+				CODE_SIGN_ENTITLEMENTS = BRAVIA.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = XGA236LQ6Z;
