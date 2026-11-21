@@ -1,5 +1,6 @@
 import AppIntents
 import Foundation
+import WidgetKit
 
 struct SendTVCommandIntent: AppIntent {
     static let title: LocalizedStringResource = "Send BRAVIA Remote Command"
@@ -32,8 +33,9 @@ struct SendTVCommandIntent: AppIntent {
             preSharedKey: configuration.preSharedKey
         )
         if command == .power {
-            // Give the TV time to transition before WidgetKit reads its power status.
+            // Give the TV time to transition before refreshing the Home Screen widget.
             try? await Task.sleep(for: .milliseconds(800))
+            WidgetCenter.shared.reloadTimelines(ofKind: WidgetTVConfiguration.kind)
         }
         return .result()
     }
