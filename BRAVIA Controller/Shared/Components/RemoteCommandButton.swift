@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct RemoteCommandButton: View {
+    @Environment(\.isEnabled) private var isEnabled
     let command: TVCommand
     var prominent = false
     var prominentColor: Color = .accentColor
@@ -32,7 +33,7 @@ struct RemoteCommandButton: View {
                         .padding(-3)
                 }
             }
-            .opacity(isPressed ? 0.7 : 1)
+            .opacity(isEnabled ? (isPressed ? 0.7 : 1) : 0.35)
             .scaleEffect(isPressed ? 0.97 : 1)
             .contentShape(Rectangle())
             .gesture(
@@ -47,9 +48,13 @@ struct RemoteCommandButton: View {
             }
             .onAppear { HapticFeedback.prepareForButtonPress() }
             .onDisappear { cancelPress() }
+            .onChange(of: isEnabled) { _, enabled in
+                if !enabled { cancelPress() }
+            }
             .accessibilityElement()
             .accessibilityAddTraits(.isButton)
             .accessibilityAction {
+                guard isEnabled else { return }
                 HapticFeedback.tap()
                 action()
             }
@@ -88,6 +93,7 @@ struct RemoteCommandButton: View {
     }
 
     private func updatePress(at location: CGPoint) {
+        guard isEnabled else { return }
         if !isTrackingPress {
             isTrackingPress = true
             isCancelled = false
@@ -101,6 +107,7 @@ struct RemoteCommandButton: View {
     }
 
     private func finishPress(at location: CGPoint) {
+        guard isEnabled else { return }
         let shouldPerformAction = !isCancelled && buttonBounds.contains(location)
         if shouldPerformAction {
             endPress()

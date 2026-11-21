@@ -94,9 +94,27 @@ enum TVCommand: String, CaseIterable, Identifiable {
         }
     }
 
-    /// Fallback codes from Sony's IRCC-IP reference. A later discovery phase
-    /// should replace these with values returned by getRemoteControllerInfo.
-    var irccCode: String {
+    var sonyButtonNames: [String] {
+        switch self {
+        case .androidMenu: ["AndroidMenu", "ActionMenu"]
+        case .confirm: ["Confirm", "Enter"]
+        case .previous: ["Prev", "Previous"]
+        default: [rawValue]
+        }
+    }
+
+    var fallbackIRCCCode: String? {
+        switch self {
+        case .power, .input, .home, .back, .up, .down, .left, .right, .confirm,
+             .volumeUp, .volumeDown, .mute, .channelUp, .channelDown:
+            referenceIRCCCode
+        default:
+            nil
+        }
+    }
+
+    /// Known codes for identifying buttons whose reported names vary.
+    var referenceIRCCCode: String {
         switch self {
         case .power: "AAAAAQAAAAEAAAAVAw=="
         case .input: "AAAAAQAAAAEAAAAlAw=="

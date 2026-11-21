@@ -13,6 +13,7 @@ final class AppModel: ObservableObject {
     @Published private(set) var isDiscovering = false
     @Published private(set) var discoveryMessage: String?
     @Published var presentedError: String?
+    @Published private var remoteCommandCodes: [TVCommand: String]?
 
     private let controller: any TVControlling
     private let discoveryService: any TVDiscovering
@@ -58,28 +59,36 @@ final class AppModel: ObservableObject {
             .trimmingCharacters(in: .whitespacesAndNewlines)
             .replacingOccurrences(of: "http://", with: "")
             .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
-        var candidate = TVDevice(host: normalizedHost, port: port)
+        let candidate = TVDevice(host: normalizedHost, port: port)
         connectionState = .connecting
 
         do {
             let status = try await controller.powerStatus(for: candidate, preSharedKey: preSharedKey)
+            async let reportedCodes = try? controller.remoteCommandCodes(
+                for: candidate,
+                preSharedKey: preSharedKey
+            )
             volumeInformation = try? await controller.volumeInformation(
                 for: candidate,
                 preSharedKey: preSharedKey
             )
-            if let information = try? await controller.systemInformation(
+            let information = try? await controller.systemInformation(
                 for: candidate,
                 preSharedKey: preSharedKey
-            ) {
-                candidate.name = information.name
-                candidate.model = information.model
-                systemInformation = information
-            }
+            )
+            let codes = await reportedCodes
             try credentialStore.save(preSharedKey: preSharedKey, for: candidate.id)
-            device = candidate
+            var savedDevice = candidate
+            if let information {
+                savedDevice.name = information.name
+                savedDevice.model = information.model
+            }
+            systemInformation = information
+            remoteCommandCodes = codes
+            device = savedDevice
             powerState = status
             connectionState = .connected
-            persist(candidate)
+            persist(savedDevice)
         } catch {
             connectionState = .failed(error.localizedDescription)
             presentedError = error.localizedDescription
@@ -96,6 +105,7 @@ final class AppModel: ObservableObject {
 
     private func refreshStatus(markAsConnecting: Bool) async {
         guard let device else { return }
+        let shouldRefreshCodes = markAsConnecting || (remoteCommandCodes == nil && connectionState != .connected)
         if markAsConnecting {
             connectionState = .connecting
         }
@@ -104,17 +114,25 @@ final class AppModel: ObservableObject {
                 forgetDevice()
                 return
             }
-            powerState = try await controller.powerStatus(for: device, preSharedKey: key)
-            volumeInformation = try? await controller.volumeInformation(
+            let status = try await controller.powerStatus(for: device, preSharedKey: key)
+            guard self.device?.id == device.id else { return }
+            powerState = status
+            let volume = try? await controller.volumeInformation(
                 for: device,
                 preSharedKey: key
             )
-            if markAsConnecting,
-               let information = try? await controller.systemInformation(
-                   for: device,
-                   preSharedKey: key
-               ) {
-                var updatedDevice = device
+            let information = markAsConnecting
+                ? try? await controller.systemInformation(for: device, preSharedKey: key)
+                : nil
+            let codes = shouldRefreshCodes
+                ? try? await controller.remoteCommandCodes(for: device, preSharedKey: key)
+                : nil
+            guard var updatedDevice = self.device, updatedDevice.id == device.id else { return }
+            volumeInformation = volume
+            if let codes {
+                remoteCommandCodes = codes
+            }
+            if let information {
                 updatedDevice.name = information.name
                 updatedDevice.model = information.model
                 self.device = updatedDevice
@@ -123,17 +141,29 @@ final class AppModel: ObservableObject {
             }
             connectionState = .connected
         } catch {
+            guard self.device?.id == device.id else { return }
             connectionState = .failed(error.localizedDescription)
         }
     }
 
+    func supports(_ command: TVCommand) -> Bool {
+        irccCode(for: command) != nil
+    }
+
+    private func irccCode(for command: TVCommand) -> String? {
+        if let remoteCommandCodes {
+            return remoteCommandCodes[command]
+        }
+        return command.fallbackIRCCCode
+    }
+
     func send(_ command: TVCommand) async {
-        guard let device else { return }
+        guard let device, let code = irccCode(for: command) else { return }
         do {
             guard let key = try credentialStore.preSharedKey(for: device.id) else {
                 throw SonyAPIError.invalidResponse
             }
-            try await controller.send(command, to: device, preSharedKey: key)
+            try await controller.sendIRCC(code, to: device, preSharedKey: key)
             scheduleStatusRefresh()
         } catch {
             presentedError = error.localizedDescription
@@ -184,6 +214,7 @@ final class AppModel: ObservableObject {
         powerState = .unknown
         volumeInformation = nil
         systemInformation = nil
+        remoteCommandCodes = nil
         connectionState = .disconnected
     }
 

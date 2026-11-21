@@ -10,5 +10,6 @@ protocol TVControlling {
         for device: TVDevice,
         preSharedKey: String
     ) async throws -> TVVolumeInformation
-    func send(_ command: TVCommand, to device: TVDevice, preSharedKey: String) async throws
+    func remoteCommandCodes(for device: TVDevice, preSharedKey: String) async throws -> [TVCommand: String]
+    func sendIRCC(_ code: String, to device: TVDevice, preSharedKey: String) async throws
 }

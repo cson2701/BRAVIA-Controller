@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DirectionPad: View {
     var buttonHeight: CGFloat = 48
+    let supports: (TVCommand) -> Bool
     let send: (TVCommand) -> Void
 
     var body: some View {
@@ -33,5 +34,6 @@ struct DirectionPad: View {
         ) {
             send(command)
         }
+        .disabled(!supports(command))
     }
 }

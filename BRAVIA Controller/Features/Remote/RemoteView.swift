@@ -47,7 +47,7 @@ struct RemoteView: View {
                         commandButton(.options, height: buttonHeight)
                     }
 
-                    DirectionPad(buttonHeight: buttonHeight, send: send)
+                    DirectionPad(buttonHeight: buttonHeight, supports: appModel.supports, send: send)
 
                     HStack {
                         commandButton(.back, height: buttonHeight)
@@ -117,7 +117,8 @@ struct RemoteView: View {
             }
             .background(alignment: .topLeading) {
                 HardwareVolumeButtonHandler(
-                    isEnabled: scenePhase == .active && appModel.connectionState == .connected,
+                    isEnabled: scenePhase == .active && appModel.connectionState == .connected
+                        && appModel.supports(.volumeUp) && appModel.supports(.volumeDown),
                     onVolumeUp: { send(.volumeUp) },
                     onVolumeDown: { send(.volumeDown) }
                 )
@@ -213,6 +214,7 @@ struct RemoteView: View {
         ) {
             send(command)
         }
+        .disabled(!appModel.supports(command))
     }
 
     private func sectionSpacing(

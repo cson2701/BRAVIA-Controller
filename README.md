@@ -28,13 +28,12 @@ Automatic discovery uses the BRAVIA's Bonjour-advertised Google Cast service and
 - Pre-shared-key onboarding
 - Authenticated `getPowerStatus` connection test
 - Keychain storage for the pre-shared key
-- IRCC-IP command transport
+- IRCC-IP remote buttons based on the TV’s reported command list, with a basic fallback if the list is unavailable
 - Starter remote layout for navigation, volume, channels, and playback
 - Local-network and local-HTTP Info.plist configuration
 
 ## Next implementation steps
 
 1. Test the connection flow against the physical X90J.
-2. Retrieve model/name and supported IRCC codes with `getRemoteControllerInfo`.
-3. Add typed audio, input, and app-control REST endpoints.
-4. Add a unit-test target with mocked Bonjour and `URLProtocol` transports.
+2. Add typed audio, input, and app-control REST endpoints.
+3. Add a unit-test target with mocked Bonjour and `URLProtocol` transports.

@@ -84,13 +84,53 @@ final class SonyTVClient: TVControlling {
         return information
     }
 
-    func send(_ command: TVCommand, to device: TVDevice, preSharedKey: String) async throws {
+    func remoteCommandCodes(
+        for device: TVDevice,
+        preSharedKey: String
+    ) async throws -> [TVCommand: String] {
+        let requestBody = SonyRPCRequest(
+            method: "getRemoteControllerInfo",
+            params: [String](),
+            id: 4,
+            version: "1.0"
+        )
+        let request = try makeRequest(
+            device: device,
+            path: "sony/system",
+            preSharedKey: preSharedKey,
+            body: encoder.encode(requestBody)
+        )
+        let (data, response) = try await session.data(for: request)
+        try validate(response)
+
+        let payload = try decoder.decode(SonyRemoteControllerResponse.self, from: data)
+        var codesByName: [String: String] = [:]
+        for button in payload.buttons {
+            // Valid Base64 is also safe to insert as XML text.
+            guard !button.value.isEmpty, Data(base64Encoded: button.value) != nil else { continue }
+            let name = button.name.lowercased()
+            if codesByName[name] == nil {
+                codesByName[name] = button.value
+            }
+        }
+        let advertisedCodes = Set(codesByName.values)
+        var codes: [TVCommand: String] = [:]
+        for command in TVCommand.allCases {
+            codes[command] = command.sonyButtonNames.lazy.compactMap { codesByName[$0.lowercased()] }.first
+            if codes[command] == nil, advertisedCodes.contains(command.referenceIRCCCode) {
+                codes[command] = command.referenceIRCCCode
+            }
+        }
+        return codes
+    }
+
+    func sendIRCC(_ code: String, to device: TVDevice, preSharedKey: String) async throws {
         let body = """
         <?xml version="1.0"?>
         <s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/" s:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
           <s:Body>
             <u:X_SendIRCC xmlns:u="urn:schemas-sony-com:service:IRCC:1">
-              <IRCCCode>\(command.irccCode)</IRCCCode>
+              <IRCCCode>\(code)</IRCCCode>
             </u:X_SendIRCC>
           </s:Body>
         </s:Envelope>
@@ -164,4 +204,24 @@ private struct SonySystemInformationResponse: Decodable {
 
 private struct SonyVolumeInformationResponse: Decodable {
     let result: [[TVVolumeInformation]]?
+}
+
+private struct SonyRemoteControllerResponse: Decodable {
+    struct Button: Decodable {
+        let name: String
+        let value: String
+    }
+
+    let buttons: [Button]
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        var result = try container.nestedUnkeyedContainer(forKey: .result)
+        _ = try result.superDecoder() // Sony deprecated the first result element.
+        buttons = try result.decode([Button].self)
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case result
+    }
 }
