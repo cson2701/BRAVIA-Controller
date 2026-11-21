@@ -1,6 +1,8 @@
 import AVFAudio
 import MediaPlayer
+import OSLog
 import SwiftUI
+import UIKit
 
 /// Converts physical volume-button presses into app actions while enabled.
 ///
@@ -32,22 +34,30 @@ struct HardwareVolumeButtonHandler: UIViewRepresentable {
     }
 
     static func dismantleUIView(_ volumeView: MPVolumeView, coordinator: Coordinator) {
-        coordinator.disable()
+        coordinator.detach()
     }
 
     @MainActor
     final class Coordinator: NSObject {
-        private static let neutralVolume: Float = 0.5
+        private static let foregroundVolume: Float = 0.30
         private static let volumeTolerance: Float = 0.001
+        private static let logger = Logger(subsystem: "scrapps.BRAVIA-Controller", category: "HardwareVolume")
 
         private let audioSession = AVAudioSession.sharedInstance()
         private var volumeObservation: NSKeyValueObservation?
+        private weak var volumeView: MPVolumeView?
         private weak var volumeSlider: UISlider?
         private var originalSystemVolume: Float?
+        private var baselineVolume: Float?
+        private var volumeRoute: [String]?
+        private var startupTask: Task<Void, Never>?
+        private var restorationTask: Task<Void, Never>?
+        private var restorationBackgroundTask: UIBackgroundTaskIdentifier = .invalid
         private var originalAudioCategory: AVAudioSession.Category?
         private var originalAudioMode: AVAudioSession.Mode?
         private var originalAudioCategoryOptions: AVAudioSession.CategoryOptions?
         private var didActivateAudioSession = false
+        private var isEnabled = false
         private var requestedEnabled = false
         private var activationGeneration = 0
         private var onVolumeUp: () -> Void
@@ -56,6 +66,19 @@ struct HardwareVolumeButtonHandler: UIViewRepresentable {
         init(onVolumeUp: @escaping () -> Void, onVolumeDown: @escaping () -> Void) {
             self.onVolumeUp = onVolumeUp
             self.onVolumeDown = onVolumeDown
+            super.init()
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(applicationWillResignActive),
+                name: UIApplication.willResignActiveNotification,
+                object: nil
+            )
+            NotificationCenter.default.addObserver(
+                self,
+                selector: #selector(activateIfNeeded),
+                name: UIApplication.didBecomeActiveNotification,
+                object: nil
+            )
         }
 
         func update(
@@ -66,51 +89,105 @@ struct HardwareVolumeButtonHandler: UIViewRepresentable {
         ) {
             self.onVolumeUp = onVolumeUp
             self.onVolumeDown = onVolumeDown
-
-            guard isEnabled != requestedEnabled else { return }
-            requestedEnabled = isEnabled
-            activationGeneration += 1
-
+            self.volumeView = volumeView
+            let wasEnabled = self.isEnabled
+            self.isEnabled = isEnabled
             if isEnabled {
-                let generation = activationGeneration
-                DispatchQueue.main.async { [weak self, weak volumeView] in
-                    guard let self,
-                          let volumeView,
-                          self.requestedEnabled,
-                          self.activationGeneration == generation else { return }
-                    self.enable(using: volumeView)
-                }
-            } else {
+                activateIfNeeded()
+            } else if wasEnabled {
                 disable()
             }
         }
 
-        func disable() {
+        @objc private func activateIfNeeded() {
+            guard isEnabled, !requestedEnabled, let volumeView,
+                  UIApplication.shared.applicationState == .active else { return }
+            requestedEnabled = true
+            activationGeneration += 1
+            let generation = activationGeneration
+
+            Task { @MainActor [weak self, weak volumeView] in
+                await self?.restorationTask?.value
+                guard let self, let volumeView,
+                      self.activationGeneration == generation else { return }
+                guard UIApplication.shared.applicationState == .active else {
+                    self.requestedEnabled = false
+                    return
+                }
+                self.enable(using: volumeView)
+            }
+        }
+
+        func detach() {
+            volumeView = nil
+            disable()
+        }
+
+        @objc private func applicationWillResignActive() {
+            disable()
+        }
+
+        private func disable() {
             requestedEnabled = false
             activationGeneration += 1
+            startupTask?.cancel()
+            startupTask = nil
             volumeObservation?.invalidate()
             volumeObservation = nil
 
-            if let originalSystemVolume {
-                setSystemVolume(originalSystemVolume)
+            guard restorationTask == nil else { return }
+            guard let originalSystemVolume, let slider = volumeSlider,
+                  currentVolumeRoute == volumeRoute else {
+                finishAudioSession()
+                return
             }
 
+            // Issue the restore while the app still has focus and owns the audio session.
+            restorationBackgroundTask = UIApplication.shared.beginBackgroundTask(withName: "Restore media volume") { [weak self] in
+                self?.restorationTask?.cancel()
+                self?.finishAudioSession()
+            }
+            setSystemVolume(originalSystemVolume)
+            restorationTask = Task { @MainActor in
+                // MPVolumeView applies volume asynchronously. Keep the slider and session
+                // alive until the change is visible, with one bounded retry.
+                try? await Task.sleep(for: .milliseconds(150))
+                guard !Task.isCancelled else { return }
+                if currentVolumeRoute == volumeRoute,
+                   abs(audioSession.outputVolume - originalSystemVolume) > Self.volumeTolerance {
+                    slider.value = originalSystemVolume
+                    slider.sendActions(for: .valueChanged)
+                    try? await Task.sleep(for: .milliseconds(150))
+                    guard !Task.isCancelled else { return }
+                    if currentVolumeRoute == volumeRoute,
+                       abs(audioSession.outputVolume - originalSystemVolume) > Self.volumeTolerance {
+                        Self.logger.warning("iOS did not confirm the original media volume was restored.")
+                    }
+                }
+                finishAudioSession()
+            }
+        }
+
+        private func finishAudioSession() {
             if didActivateAudioSession {
                 try? audioSession.setActive(false, options: .notifyOthersOnDeactivation)
                 didActivateAudioSession = false
             }
             restoreAudioSessionConfiguration()
             originalSystemVolume = nil
+            baselineVolume = nil
+            volumeRoute = nil
             volumeSlider = nil
+            restorationTask = nil
+            if restorationBackgroundTask != .invalid {
+                UIApplication.shared.endBackgroundTask(restorationBackgroundTask)
+                restorationBackgroundTask = .invalid
+            }
         }
 
         private func enable(using volumeView: MPVolumeView) {
 #if !targetEnvironment(simulator)
-            // MPVolumeView controls the volume of the active media route. When
-            // AirPlay is connected that route is the TV, so moving the slider
-            // to the neutral capture point would immediately set the TV to 50%.
-            // Leave hardware volume handling to the system while AirPlay is in
-            // use instead of intercepting those button presses for IRCC.
+            // AirPlay already sends volume changes to the active media route.
             guard !audioSession.currentRoute.outputs.contains(where: { $0.portType == .airPlay }),
                   volumeObservation == nil,
                   let slider = volumeView.subviews.first(where: { $0 is UISlider }) as? UISlider else {
@@ -121,12 +198,9 @@ struct HardwareVolumeButtonHandler: UIViewRepresentable {
             originalAudioCategory = audioSession.category
             originalAudioMode = audioSession.mode
             originalAudioCategoryOptions = audioSession.categoryOptions
-
             do {
-                // An active playback-capable session makes the rocker adjust
-                // media volume instead of the phone's ringer volume. Ambient
-                // preserves audio playing in other apps.
-                try audioSession.setCategory(.ambient, mode: .default)
+                // A nonmixable session lets iOS interrupt existing media playback.
+                try audioSession.setCategory(.playback, mode: .default)
                 try audioSession.setActive(true)
                 didActivateAudioSession = true
             } catch {
@@ -135,31 +209,60 @@ struct HardwareVolumeButtonHandler: UIViewRepresentable {
                 return
             }
 
-            originalSystemVolume = audioSession.outputVolume
-            setSystemVolume(Self.neutralVolume)
-
-            volumeObservation = audioSession.observe(\.outputVolume, options: [.new]) { [weak self] _, change in
-                guard let newVolume = change.newValue else { return }
-                Task { @MainActor [weak self] in
-                    self?.systemVolumeDidChange(to: newVolume)
+            let generation = activationGeneration
+            startupTask = Task { [weak self] in
+                // Give the newly active session time to report the current route and volume.
+                try? await Task.sleep(for: .milliseconds(150))
+                guard let self, !Task.isCancelled, self.activationGeneration == generation,
+                      UIApplication.shared.applicationState == .active else { return }
+                guard !self.audioSession.currentRoute.outputs.contains(where: { $0.portType == .airPlay }) else {
+                    self.disable()
+                    return
                 }
+
+                self.volumeRoute = self.currentVolumeRoute
+                self.originalSystemVolume = self.audioSession.outputVolume
+                self.setSystemVolume(Self.foregroundVolume)
+
+                // Let the route apply and round the requested volume before observing it.
+                try? await Task.sleep(for: .milliseconds(150))
+                guard !Task.isCancelled, self.activationGeneration == generation,
+                      self.currentVolumeRoute == self.volumeRoute else { return }
+                self.observeVolume(baseline: self.audioSession.outputVolume, generation: generation)
             }
 #endif
         }
 
+        private var currentVolumeRoute: [String] {
+            audioSession.currentRoute.outputs.map(\.uid)
+        }
+
+        private func observeVolume(baseline: Float, generation: Int) {
+            baselineVolume = baseline
+            volumeObservation = audioSession.observe(\.outputVolume, options: [.new]) { [weak self] _, change in
+                guard let newVolume = change.newValue else { return }
+                Task { @MainActor [weak self] in
+                    guard let self, self.activationGeneration == generation else { return }
+                    self.systemVolumeDidChange(to: newVolume)
+                }
+            }
+        }
+
         private func systemVolumeDidChange(to newVolume: Float) {
             guard requestedEnabled,
-                  abs(newVolume - Self.neutralVolume) > Self.volumeTolerance else {
+                  currentVolumeRoute == volumeRoute,
+                  let baselineVolume,
+                  abs(newVolume - baselineVolume) > Self.volumeTolerance else {
                 return
             }
 
-            if newVolume > Self.neutralVolume {
+            if newVolume > baselineVolume {
                 onVolumeUp()
             } else {
                 onVolumeDown()
             }
 
-            setSystemVolume(Self.neutralVolume)
+            setSystemVolume(baselineVolume)
         }
 
         private func setSystemVolume(_ volume: Float) {

@@ -1,9 +1,10 @@
 import SwiftUI
 
 struct RemoteView: View {
-    @Environment(\.scenePhase) private var scenePhase
     @ObservedObject var appModel: AppModel
+    @Binding var hardwareVolumeControlEnabled: Bool
     @State private var isShowingTVInformation = false
+    @State private var isShowingSettings = false
 
     var body: some View {
         NavigationStack {
@@ -96,13 +97,13 @@ struct RemoteView: View {
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
+                        Button("Settings", systemImage: "gearshape") {
+                            HapticFeedback.tap()
+                            isShowingSettings = true
+                        }
                         Button("Reconnect") {
                             HapticFeedback.tap()
                             Task { await appModel.reconnect() }
-                        }
-                        Button("Forget TV", role: .destructive) {
-                            HapticFeedback.tap()
-                            appModel.forgetDevice()
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
@@ -115,16 +116,11 @@ struct RemoteView: View {
             .sheet(isPresented: $isShowingTVInformation) {
                 TVInformationView(appModel: appModel)
             }
-            .background(alignment: .topLeading) {
-                HardwareVolumeButtonHandler(
-                    isEnabled: scenePhase == .active && appModel.connectionState == .connected
-                        && appModel.supports(.volumeUp) && appModel.supports(.volumeDown),
-                    onVolumeUp: { send(.volumeUp) },
-                    onVolumeDown: { send(.volumeDown) }
+            .sheet(isPresented: $isShowingSettings) {
+                RemoteSettingsView(
+                    hardwareVolumeControlEnabled: $hardwareVolumeControlEnabled,
+                    forgetTV: appModel.forgetDevice
                 )
-                .frame(width: 1, height: 1)
-                .allowsHitTesting(false)
-                .accessibilityHidden(true)
             }
         }
     }
